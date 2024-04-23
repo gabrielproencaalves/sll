@@ -1,0 +1,31 @@
+#ifndef SLL_H
+#define SLL_H
+
+/* list structure definition */
+typedef struct list_ list;
+
+/* returns a recently created list */
+list*
+list_new(size_t);
+
+/* frees the specified list */
+void
+list_free(list*);
+
+/* appends a new item to the list */
+int
+list_append(list*, void*);
+
+/* pops the last list item */
+void*
+list_pop(list*);
+
+/* inserts a new item on specified index of list */
+int
+list_insert(list*, size_t, void*);
+
+/* deletes the specified index of list */
+int
+list_delete(list*, size_t);
+
+#endif /* SLL_H */
