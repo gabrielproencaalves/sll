@@ -1,6 +1,9 @@
 #ifndef SLL_H
 #define SLL_H
 
+#define list_index(listpp, idx)       \
+  ((listpp*) + (listpp*)->usize * (idx))
+
 /* list structure definition */
 typedef struct list_ list;
 
