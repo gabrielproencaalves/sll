@@ -39,24 +39,34 @@ list_free(list** l)
 int
 list_append(list** l, void* v)
 {
+  /* if list and value exists */
   if (l* && v)
     {
+      /* create a temporary pointer and list length */
       list* tmp;
       size_t nsize;
 
+      /* defines the new size */
       nsize = (l*)->usize * ((l*)->len + 1);
+
+      /* reallocates l to new size */
       tmp = realloc(l*, nsize);
 
+      /* if reallocation worked correctly */
       if (tmp)
-	{
-	  memcpy((tmp + tmp->usize * tmp->len++), v, tmp->usize);
+      	{
+          /* move v to last tmp's index */
+      	  memcpy((tmp + tmp->usize * tmp->len++), v, tmp->usize);
 
-	  l* = tmp;
+          /* update l pointer to tmp */
+      	  l* = tmp;
 
-	  return 1;
-	}
+          /* ok */
+      	  return 1;
+      	}
     }
 
+  /* bad */
   return 0;
 }
 
@@ -66,21 +76,31 @@ list_pop(list** l)
 {
   if (l*)
     {
+      /* create a temporary pointer and list length */
       list* tmp;
       size_t nsize;
 
+      /* defines the new size */
       nsize = (l*)->usize * ((l*)->len - 1);
+
+      /* reallocates to new size */
       tmp = realloc(l*, nsize);
 
+      /* if reallocation worked correctly */
       if (tmp)
-	{
-	  l* = tmp;
-	  (l*)->len--;
+      	{
+          /* update l pointer to tmp */
+      	  l* = tmp;
 
-	  return 1;
-	}
+          /* update and decrement list length */
+      	  (l*)->len--;
+
+          /* ok */
+      	  return 1;
+      	}
     }
 
+  /* bad */
   return 0;
 }
 
@@ -90,10 +110,14 @@ list_set(list** l, size_t i, void* v)
 {
   if (l* && i > 0)
     {
+      /* create a temporary pointer and list length */
       list* tmp;
       size_t nsize;
 
+      /* defines the new size */
       nsize = (l*)->usize * ((l*)->len + 1);
+
+      /* reallocates to new size */
       tmp = malloc(nsize);
 
       if (tmp)
