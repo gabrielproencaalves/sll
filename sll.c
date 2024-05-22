@@ -1,5 +1,6 @@
 #include "sll.h"
 #include <stdlib.h>
+#include <string.h>
 
 struct list_
 {
@@ -17,9 +18,10 @@ struct list_
 list**
 list_new(size_t usiz)
 {
-  list** tmp* = malloc(sizeof(list));
-  (tmp*)->usize = usiz;
-  (tmp*)->len = 0;
+  list** tmp;
+  *tmp = malloc(sizeof(list*));
+  (*tmp)->usize = usiz;
+  (*tmp)->len = 0;
 
   return tmp;
 }
@@ -28,10 +30,10 @@ list_new(size_t usiz)
 void
 list_free(list** l)
 {
-  if (l*)
+  if (*l)
     {
-      free((l*)->index);
-      free(l*);
+      free((*l)->index);
+      free(*l);
     }
 }
 
@@ -40,17 +42,17 @@ int
 list_append(list** l, void* v)
 {
   /* if list and value exists */
-  if (l* && v)
+  if (*l && v)
     {
       /* create a temporary pointer and list length */
       list* tmp;
       size_t nsize;
 
       /* defines the new size */
-      nsize = (l*)->usize * ((l*)->len + 1);
+      nsize = (*l)->usize * ((*l)->len + 1);
 
       /* reallocates l to new size */
-      tmp = realloc(l*, nsize);
+      tmp = realloc(*l, nsize);
 
       /* if reallocation worked correctly */
       if (tmp)
@@ -59,7 +61,7 @@ list_append(list** l, void* v)
       	  memcpy((tmp + tmp->usize * tmp->len++), v, tmp->usize);
 
           /* update l pointer to tmp */
-      	  l* = tmp;
+          *l = tmp;
 
           /* ok */
       	  return 1;
@@ -74,26 +76,26 @@ list_append(list** l, void* v)
 int
 list_pop(list** l)
 {
-  if (l*)
+  if (*l)
     {
       /* create a temporary pointer and list length */
       list* tmp;
       size_t nsize;
 
       /* defines the new size */
-      nsize = (l*)->usize * ((l*)->len - 1);
+      nsize = (*l)->usize * ((*l)->len - 1);
 
       /* reallocates to new size */
-      tmp = realloc(l*, nsize);
+      tmp = realloc(*l, nsize);
 
       /* if reallocation worked correctly */
       if (tmp)
       	{
           /* update l pointer to tmp */
-      	  l* = tmp;
+          *l = tmp;
 
           /* update and decrement list length */
-      	  (l*)->len--;
+          (*l)->len--;
 
           /* ok */
       	  return 1;
@@ -109,17 +111,19 @@ int
 list_set(list** l, size_t idx, void* v)
 {
   /* if l is a valid pointer, i is positive and inside length of l */
-  if (l* && idx > 0 && idx <= (l*)->len && )
+  if (*l && idx > 0 && idx <= (*l)->len && v)
     {
       /* create a temporary pointer and list length */
       list* tmp;
       size_t nsize;
 
-      /* iterator */
+      /* first iterator (for tmp*) */
       size_t i;
+      /* second iterator (for l*) */
+      size_t j;
 
       /* defines the new size */
-      nsize = (l*)->usize * ((l*)->len + 1);
+      nsize = (*l)->usize * ((*l)->len + 1);
 
       /* reallocates to new size */
       tmp = malloc(nsize);
@@ -128,22 +132,30 @@ list_set(list** l, size_t idx, void* v)
       if (tmp)
         {
           /* until idx, copy content from l to tmp */
-          for (i = 0; i < (idx-1); i++)
-            list_index(&tmp, i)* = list_index(l, i)*;
+          /*for (i = j = 0; i < (idx-1); i++, j++)
+            *list_index(&tmp, i) = *list_index(l, j);*/
+          memcpy(list_index(&tmp, 0), list_index(l, 0), (idx - 1) * (*l)->usize);
 
           /* insert the new value into tmp[idx] */
-          list_index(&tmp, idx - 1)* = (v*);
+          /**list_index(&tmp, idx - 1) = (*v);*/
+          memcpy(list_index(&tmp, idx - 1), v, (*l)->usize);
 
           /* copy remaining contents */
-          for (i += 2; i < nsize; i++)
-            list_index(&tmp, i)* = list_index(l, i-1)*;
+          /*for (i += 2; i < nsize; i++, j++)
+            *list_index(&tmp, i) = *list_index(l, j);*/
+          memcpy(list_index(&tmp, idx),
+                 list_index(l, idx - 1),
+                 (nsize - idx) * (*l)->usize);
         }
-
 
       /* free old list*/
       list_free(l);
 
       /* update l pointer */
-      l* = tmp;
+      *l = tmp;
+
+      return 1;
     }
+
+  return 0;
 }
