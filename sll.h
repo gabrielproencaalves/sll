@@ -1,11 +1,22 @@
+#include <stddef.h>
 #ifndef SLL_H
 #define SLL_H
 
 #define list_index(listpp, idx)       \
-  ((listpp*) + (listpp*)->usize * (idx))
+  ((*listpp) + (*listpp)->usize * (idx))
 
 /* list structure definition */
-typedef struct list_ list;
+typedef struct list_
+{
+  /* The whole list length */
+  size_t len;
+
+  /* The size of each unit inside list */
+  size_t usize;
+
+  /* The list itself and his values */
+  void* index;
+} list;
 
 /* returns a recently created list */
 list**

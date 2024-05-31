@@ -1,37 +1,31 @@
-#include <sll.h>
+#include "sll.h"
 #include <stdlib.h>
-
-struct list_
-{
-  /* The whole list length */
-  size_t len;
-
-  /* The size of each unit inside list */
-  size_t usize;
-
-  /* The list itself and his values */
-  void* index;
-};
+#include <string.h>
 
 /* list structure definition */
 list**
 list_new(size_t usiz)
 {
-  list* tmp = malloc(sizeof(list));
-  tmp->usize = usiz;
-  tmp->len = 0;
+  list** tmp = malloc(sizeof(list**));
+  *tmp = malloc(sizeof(list*));
+  (*tmp)->usize = usiz;
+  (*tmp)->len = 0;
+  (*tmp)->index = NULL;
 
-  return &tmp;
+  return tmp;
 }
 
 /* frees the specified list */
 void
 list_free(list** l)
 {
-  if (l*)
+  if (l)
     {
-      free((l*)->index);
-      free(l*);
+      if ((*l)->index)
+        free((*l)->index);
+
+      free(*l);
+      free(l);
     }
 }
 
@@ -40,26 +34,29 @@ int
 list_append(list** l, void* v)
 {
   /* if list and value exists */
-  if (l* && v)
+  if (*l && v)
     {
       /* create a temporary pointer and list length */
-      list* tmp;
+      void* tmp;
       size_t nsize;
 
       /* defines the new size */
-      nsize = (l*)->usize * ((l*)->len + 1);
+      nsize = (*l)->usize * ((*l)->len + 1);
 
-      /* reallocates l to new size */
-      tmp = realloc(l*, nsize);
+      if ((*l)->index)
+        /* reallocates l->index to new size */
+        tmp = realloc((*l)->index, nsize);
+      else
+        tmp = malloc(nsize);
 
-      /* if reallocation worked correctly */
+      /* if re/allocation worked correctly */
       if (tmp)
       	{
           /* move v to last tmp's index */
-      	  memcpy((tmp + tmp->usize * tmp->len++), v, tmp->usize);
+          memcpy((tmp + (*l)->usize * (*l)->len++), v, (*l)->usize);
 
           /* update l pointer to tmp */
-      	  l* = tmp;
+          (*l)->index = tmp;
 
           /* ok */
       	  return 1;
@@ -74,26 +71,23 @@ list_append(list** l, void* v)
 int
 list_pop(list** l)
 {
-  if (l*)
+  if (*l && (*l)->len > 0)
     {
       /* create a temporary pointer and list length */
-      list* tmp;
+      void* tmp;
       size_t nsize;
 
       /* defines the new size */
-      nsize = (l*)->usize * ((l*)->len - 1);
+      nsize = (*l)->usize * --(*l)->len;
 
       /* reallocates to new size */
-      tmp = realloc(l*, nsize);
+      tmp = realloc((*l)->index, nsize);
 
       /* if reallocation worked correctly */
-      if (tmp)
+      if (tmp || nsize == 0)
       	{
           /* update l pointer to tmp */
-      	  l* = tmp;
-
-          /* update and decrement list length */
-      	  (l*)->len--;
+          (*l)->index = tmp;
 
           /* ok */
       	  return 1;
@@ -106,23 +100,58 @@ list_pop(list** l)
 
 /* inserts a new value on specified index of list */
 int
-list_set(list** l, size_t i, void* v)
+list_set(list** l, size_t idx, void* v)
 {
-  if (l* && i > 0)
+  /* if l is a valid pointer, i is positive and inside length of l */
+  if (*l && idx > 0 && idx <= (*l)->len + 1 && v)
     {
       /* create a temporary pointer and list length */
-      list* tmp;
-      size_t nsize;
+      list** tmp;
 
-      /* defines the new size */
-      nsize = (l*)->usize * ((l*)->len + 1);
+      /* real index */
+      size_t ridx;
 
-      /* reallocates to new size */
-      tmp = malloc(nsize);
+      /* an iterator */
+      size_t i;
 
-      if (tmp)
-        {
+      /* instance a new list to tmp */
+      tmp = list_new((*l)->usize);
 
-        }
+      /* define real index */
+      ridx = idx - 1;
+
+
+      /* until idx, copy content from l to tmp */
+      for (i = 0; i < ridx; i++)
+        /* if error */
+        if (! list_append(tmp, (*l)->index + (*l)->usize * i))
+          /* return bad signal */
+          return 0;
+
+      /* insert the new value into tmp[idx] */
+      if (! list_append(tmp, v))
+        /* return bad signal, if error */
+        return 0;
+
+      /* until len, copy content from l to tmp */
+      for (; i < (*l)->len; i++)
+        /* if error */
+        if (! list_append(tmp, (*l)->index + (*l)->usize * i))
+          /* return bad signal */
+          return 0;
+
+      /* free old list and struct */
+      free((*l)->index);
+      free((*l));
+
+      /* update l pointer */
+      (*l) = (*tmp);
+
+      /* free tmp struct ** */
+      free(tmp);
+
+      return 1;
     }
+
+  return 0;
 }
