@@ -34,7 +34,7 @@ int
 list_append(list** l, void* v)
 {
   /* if list and value exists */
-  if (*l && v)
+  if (l && v)
     {
       /* create a temporary pointer and list length */
       void* tmp;
@@ -71,7 +71,7 @@ list_append(list** l, void* v)
 int
 list_pop(list** l)
 {
-  if (*l && (*l)->len > 0)
+  if (l && (*l)->len > 0)
     {
       /* create a temporary pointer and list length */
       void* tmp;
@@ -103,7 +103,7 @@ int
 list_set(list** l, size_t idx, void* v)
 {
   /* if l is a valid pointer, i is positive and inside length of l */
-  if (*l && idx > 0 && idx <= (*l)->len + 1 && v)
+  if (l && idx > 0 && idx <= (*l)->len + 1 && v)
     {
       /* create a temporary pointer and list length */
       list** tmp;
