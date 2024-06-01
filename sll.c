@@ -150,8 +150,37 @@ list_set(list** l, size_t idx, void* v)
       /* free tmp struct ** */
       free(tmp);
 
+      /* ok */
       return 1;
     }
 
+  /* bad */
+  return 0;
+}
+
+/* deletes the specified index of list */
+int
+list_del(list** l, size_t idx)
+{
+  /* if l is a valid pointer, i is positive and inside length of l */
+  if (l && idx > 0 && idx <= (*l)->len)
+    {
+      /* real index */
+      int ridx;
+
+      ridx = idx - 1;
+
+      /* shift the items started from idx */
+      memcpy((*l)->index + (*l)->usize * ridx,
+             (*l)->index + (*l)->usize * idx,
+             (*l)->len - idx);
+
+      /* remove the last index element */
+      if (list_pop(l))
+        /* ok */
+        return 1;
+    }
+
+  /* bad */
   return 0;
 }
