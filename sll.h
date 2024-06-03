@@ -42,4 +42,10 @@ list_set(list**, size_t, void*);
 int
 list_del(list**, size_t);
 
+
+/* returns the idx-th list element */
+void*
+list_get(list**, size_t);
+
+
 #endif /* SLL_H */

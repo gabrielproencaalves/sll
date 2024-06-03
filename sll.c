@@ -162,7 +162,7 @@ list_set(list** l, size_t idx, void* v)
 int
 list_del(list** l, size_t idx)
 {
-  /* if l is a valid pointer, i is positive and inside length of l */
+  /* if l is a valid pointer, idx is positive and inside length of l */
   if (l && idx > 0 && idx <= (*l)->len)
     {
       /* real index */
@@ -183,4 +183,15 @@ list_del(list** l, size_t idx)
 
   /* bad */
   return 0;
+}
+
+void*
+list_get(list** l, size_t idx)
+{
+  /* if l is a valid pointer, idx is positive and inside length of l */
+  if (l && idx > 0 && idx <= (*l)->len)
+      return (*l)->index + (*l)->usize * (idx - 1);
+
+  /* bad */
+  return NULL;
 }
